@@ -1,3 +1,7 @@
+# how to build this reproducibly:
+# docker build -t request2:latest .
+# docker tag request2:latest request2:`git describe --always --tags`
+
 FROM debian:testing
 
 RUN apt-get -qq update && \
