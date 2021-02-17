@@ -46,4 +46,4 @@ RUN ln -sf /srv/config/ssmtp.conf /etc/ssmtp/ssmtp.conf
 
 # add the runner and run it!
 ADD docker/run.sh /srv/run.sh
-CMD /srv/run.sh
+CMD sg www-data -c "/bin/sh /srv/run.sh"
