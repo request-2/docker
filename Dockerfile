@@ -7,10 +7,11 @@ FROM debian:testing
 RUN apt-get -qq update && \
     apt-get install --no-install-recommends -y \
         psmisc curl procps vim \
-    	ghc cabal-install \
-	yarnpkg \
-	nginx ssmtp \
-	libpq-dev postgresql-client zlib1g-dev
+        ghc cabal-install \
+        yarnpkg \
+        nginx ssmtp \
+        libpq-dev postgresql-client zlib1g-dev && \
+    rm -fr /var/lib/apt /var/cache/apt
 
 # add the haskell backend
 ADD cabal.project /src/request2/cabal.project
@@ -34,8 +35,11 @@ ADD frontend /src/frontend
 ADD docker/react-env /src/frontend/.env
 
 # compile and install frontend
-RUN cd /src/frontend && yarnpkg install && yarnpkg run build
-RUN cp -a /src/frontend/build /srv/frontend
+RUN cd /src/frontend && \
+    yarnpkg install && \
+    yarnpkg run build && \
+    rm -fr node_modules && \
+    cp -a /src/frontend/build /srv/frontend
 
 RUN rm -fr /src
 
