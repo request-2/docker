@@ -27,8 +27,10 @@ ADD src /src/request2/src
 RUN mkdir -p /srv
 
 # compile and install backend
-RUN cabal update
-RUN cd /src/request2 && cabal install
+RUN cabal update && \
+    cd /src/request2 && \
+    cabal install && \
+    rm -fr /root/.cabal/packages
 
 # add frontend
 ADD frontend /src/frontend
