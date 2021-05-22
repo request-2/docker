@@ -1,16 +1,22 @@
 # how to build this reproducibly:
-# docker build -t request2:latest .
+# For MSMS
+# docker build -t request2:latest --build-arg TARGET_MSMS=1 .
+# For Analytics
+# docker build -t request2:latest --build-arg TARGET_MSMS=0
+
 # docker tag request2:latest request2:`git describe --always --tags`
 
 FROM debian:testing
 
+ARG TARGET_MSMS
+
 RUN apt-get -qq update && \
     apt-get install --no-install-recommends -y \
-        psmisc curl procps vim \
-        ghc cabal-install \
-        yarnpkg \
-        nginx ssmtp \
-        libpq-dev postgresql-client zlib1g-dev && \
+    psmisc curl procps vim \
+    ghc cabal-install \
+    yarnpkg \
+    nginx ssmtp \
+    libpq-dev postgresql-client zlib1g-dev && \
     rm -fr /var/lib/apt /var/cache/apt
 
 # add the haskell backend
@@ -35,6 +41,10 @@ RUN cabal update && \
 # add frontend
 ADD frontend /src/frontend
 ADD docker/react-env /src/frontend/.env
+
+ENV REACT_APP_TARGET=${TARGET_MSMS=msms:+msms}
+# if NODE_ENV is null, set it to 'production' (or leave as is otherwise).
+ENV REACT_APP_TARGET=${NODE_ENV:-analytics}
 
 # compile and install frontend
 RUN cd /src/frontend && \
