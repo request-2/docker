@@ -30,8 +30,10 @@ ADD frontend /src/frontend
 ADD docker/react-env /src/frontend/.env
 
 # compile and install frontend
+ADD RequestTypes /src/RequestTypes
 RUN cd /src/frontend && \
     yarnpkg install && \
+    yarnpkg run loadforms && \
     yarnpkg run build && \
     rm -fr node_modules && \
     cp -a /src/frontend/build /srv/frontend
