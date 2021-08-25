@@ -1,6 +1,7 @@
-# how to build this reproducibly:
-# docker build -t request2:latest
-# docker tag request2:latest request2:`git describe --always --tags`
+# how to build this reproducibly (from the "environment" package):
+# rqtag=-yourlab
+# docker build -f docker/Dockerfile --squash=true -t request2$rqtag:latest .
+# docker tag request2$rqtag:latest request2$rqtag:`git describe --always --tags`
 
 FROM debian:testing
 
@@ -10,8 +11,7 @@ RUN apt-get -qq update && \
     ghc cabal-install \
     yarnpkg \
     nginx ssmtp \
-    libpq-dev postgresql-client zlib1g-dev && \
-    rm -fr /var/lib/apt /var/cache/apt
+    libpq-dev postgresql-client zlib1g-dev
 
 # add the haskell backend
 ADD backend /src/request2
@@ -23,7 +23,8 @@ RUN mkdir -p /srv
 RUN cabal update && \
     cd /src/request2 && \
     cabal install && \
-    rm -fr /root/.cabal/packages
+    cp -L /root/.cabal/bin/request2 /usr/bin/request2 && \
+    rm -fr /root/.cabal
 
 # add frontend
 ADD frontend /src/frontend
@@ -38,7 +39,12 @@ RUN cd /src/frontend && \
     rm -fr node_modules && \
     cp -a /src/frontend/build /srv/frontend
 
+# clean everything
 RUN rm -fr /src
+RUN apt-get -y remove yarnpkg ghc cabal-install && \
+    apt-get -y autoremove && \
+    rm -fr /var/lib/apt /var/cache/apt && \
+    rm -fr /usr/local/share/.cache # omg yarn!
 
 # add nginx config
 CMD mkdir -p /srv/data
