@@ -1,7 +1,7 @@
 # how to build this reproducibly (from the "environment" package):
 # rqtag=-yourlab
-# docker build -f docker/Dockerfile --squash=true -t request2$rqtag:latest .
-# docker tag request2$rqtag:latest request2$rqtag:`git describe --always --tags`
+# docker build -f docker/Dockerfile --squash=true -t request2${rqtag}:latest .
+# docker tag request2${rqtag}:latest request2${rqtag}:`git describe --always --tags`
 
 FROM debian:testing
 
