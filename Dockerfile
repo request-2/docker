@@ -3,7 +3,7 @@
 # docker build -f docker/Dockerfile --squash=true -t request2${rqtag}:latest .
 # docker tag request2${rqtag}:latest request2${rqtag}:`git describe --always --tags`
 
-FROM debian:testing
+FROM ghcr.io/request-2/docker-base:latest
 
 RUN apt-get -qq update && \
     apt-get install --no-install-recommends -y \
@@ -20,8 +20,7 @@ ADD backend /src/request2
 RUN mkdir -p /srv
 
 # compile and install backend
-RUN cabal update && \
-    cd /src/request2 && \
+RUN cd /src/request2 && \
     cabal install && \
     cp -L /root/.cabal/bin/request2 /usr/bin/request2 && \
     rm -fr /root/.cabal
